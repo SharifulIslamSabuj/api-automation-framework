@@ -1,0 +1,18 @@
+<suite name="Regression Suite" parallel="classes" thread-count="5">
+
+    <test name="Regression Tests">
+
+        <groups>
+            <run>
+                <include name="regression"/>
+            </run>
+        </groups>
+
+        <packages>
+            <package name="com.grocery.store.api.tests.api"/>
+            <package name="com.grocery.store.api.tests.e2e"/>
+        </packages>
+
+    </test>
+
+</suite>

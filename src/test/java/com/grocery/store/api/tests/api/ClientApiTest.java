@@ -1,23 +1,29 @@
 package com.grocery.store.api.tests.api;
 
-import com.grocery.store.api.client.ApiClient;
-import com.thedeanda.lorem.LoremIpsum;
+import com.grocery.store.api.models.request.ClientRequest;
+import com.grocery.store.api.services.ClientService;
+import com.grocery.store.api.testdata.builder.ClientRequestBuilder;
+import com.grocery.store.api.testdata.generator.DataGenerator;
+import com.grocery.store.api.utils.TokenManager;
+import org.hamcrest.Matchers;
 import org.testng.annotations.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
+@Test(groups = {"regression"})
 public class ClientApiTest {
+
+    private final ClientService clientService = new ClientService();
 
     @Test(description = "Verify API client can be created")
     public void createApiClientShouldSucceed() {
 
-        Map<String, String> client = new HashMap<>();
-        client.put("clientName", LoremIpsum.getInstance().getName());
-        client.put("clientEmail", LoremIpsum.getInstance().getEmail());
+        ClientRequest request = new ClientRequestBuilder()
+                .setClientName(DataGenerator.randomName())
+                .setClientEmail(DataGenerator.randomEmail())
+                .build();
 
-        ApiClient.post("/api-clients", client)
+        clientService.createClient(request, TokenManager.getToken())
                 .then()
-                .statusCode(201);
+                .statusCode(201)
+                .body("accessToken", Matchers.notNullValue());
     }
 }

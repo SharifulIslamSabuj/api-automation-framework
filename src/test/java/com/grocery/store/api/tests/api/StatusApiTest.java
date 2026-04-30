@@ -1,18 +1,22 @@
 package com.grocery.store.api.tests.api;
 
-import com.grocery.store.api.client.ApiClient;
+import com.grocery.store.api.services.StatusService;
+import org.hamcrest.Matchers;
 import org.testng.annotations.Test;
-
-import static org.hamcrest.Matchers.equalTo;
 
 public class StatusApiTest {
 
-    @Test(description = "Verify API status is UP")
+    private final StatusService statusService = new StatusService();
+
+    @Test(
+            description = "Verify API health status is UP",
+            groups = {"smoke"}
+    )
     public void getStatusShouldReturnUp() {
 
-        ApiClient.get("/status")
+        statusService.getStatus()
                 .then()
                 .statusCode(200)
-                .body("status", equalTo("UP"));
+                .body("status", Matchers.equalTo("UP"));
     }
 }

@@ -58,6 +58,7 @@ tasks.register('generateSingleAllureHtml', Exec) {
     }
 }
 
+/*
 test {
 
     useTestNG()
@@ -75,4 +76,15 @@ test {
             layout.buildDirectory.dir("allure-results").get().asFile.absolutePath
 
     finalizedBy tasks.generateSingleAllureHtml
+}
+*/
+
+test {
+    useTestNG()
+
+    if (project.hasProperty('suite')) {
+        useTestNG {
+            suites "src/test/resources/testng-${project.suite}.xml"
+        }
+    }
 }

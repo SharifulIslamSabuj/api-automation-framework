@@ -1,42 +1,43 @@
 package com.grocery.store.api.utils;
 
-import io.restassured.response.Response;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static io.restassured.RestAssured.given;
-
-import com.grocery.store.api.client.RequestBuilder;
-import com.thedeanda.lorem.LoremIpsum;
+import com.grocery.store.api.models.request.ClientRequest;
+import com.grocery.store.api.services.ClientService;
 
 public class TokenManager {
 
     private static String token;
+    private static final ClientService clientService = new ClientService();
 
-    private TokenManager() {
-        // prevent instantiation
-    }
+    private TokenManager() {}
 
     public static synchronized String getToken() {
+
         if (token == null) {
             token = generateToken();
         }
+
         return token;
     }
 
     private static String generateToken() {
 
-        Map<String, String> client = new HashMap<>();
-        client.put("clientName", LoremIpsum.getInstance().getName());
-        client.put("clientEmail", LoremIpsum.getInstance().getEmail());
+        long timestamp = System.currentTimeMillis();
 
-        Response response = given()
-                .spec(RequestBuilder.getSpec())
-                .body(client)
-                .when()
-                .post("/api-clients");
+        ClientRequest request = new ClientRequest();
+        request.setClientName("AutoUser");
+        request.setClientEmail("autouser" + timestamp + "@test.com");
 
-        return response.jsonPath().getString("accessToken");
+        String accessToken = clientService.createClient(request)
+                .then()
+                .statusCode(201)
+                .extract()
+                .jsonPath()
+                .getString("accessToken");
+
+        if (accessToken == null || accessToken.isEmpty()) {
+            throw new RuntimeException("Access token is null/empty");
+        }
+
+        return accessToken;
     }
 }

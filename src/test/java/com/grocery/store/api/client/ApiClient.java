@@ -12,7 +12,7 @@ public class ApiClient {
     public static Response get(String endpoint) {
 
         return given()
-                .spec(RequestBuilder.getSpec())
+                .spec(RequestSpecFactory.getSpec())
                 .filter(new AllureRestAssured())
                 .when()
                 .get(endpoint);
@@ -20,8 +20,16 @@ public class ApiClient {
 
     public static Response post(String endpoint, Object body) {
 
+        if (body == null) {
+            return given()
+                    .spec(RequestSpecFactory.getSpec())
+                    .filter(new AllureRestAssured())
+                    .when()
+                    .post(endpoint);
+        }
+
         return given()
-                .spec(RequestBuilder.getSpec())
+                .spec(RequestSpecFactory.getSpec())
                 .filter(new AllureRestAssured())
                 .body(body)
                 .when()
@@ -30,8 +38,17 @@ public class ApiClient {
 
     public static Response postWithAuth(String endpoint, Object body, String token) {
 
+        if (body == null) {
+            return given()
+                    .spec(RequestSpecFactory.getSpec())
+                    .filter(new AllureRestAssured())
+                    .header("Authorization", "Bearer " + token)
+                    .when()
+                    .post(endpoint);
+        }
+
         return given()
-                .spec(RequestBuilder.getSpec())
+                .spec(RequestSpecFactory.getSpec())
                 .filter(new AllureRestAssured())
                 .header("Authorization", "Bearer " + token)
                 .body(body)
@@ -42,7 +59,7 @@ public class ApiClient {
     public static Response getWithAuth(String endpoint, String token) {
 
         return given()
-                .spec(RequestBuilder.getSpec())
+                .spec(RequestSpecFactory.getSpec())
                 .filter(new AllureRestAssured())
                 .header("Authorization", "Bearer " + token)
                 .when()
@@ -52,7 +69,7 @@ public class ApiClient {
     public static Response deleteWithAuth(String endpoint, String token) {
 
         return given()
-                .spec(RequestBuilder.getSpec())
+                .spec(RequestSpecFactory.getSpec())
                 .filter(new AllureRestAssured())
                 .header("Authorization", "Bearer " + token)
                 .when()

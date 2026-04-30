@@ -1,26 +1,24 @@
 package com.grocery.store.api.services;
 
+import com.grocery.store.api.client.ApiClient;
 import com.grocery.store.api.models.request.CartRequest;
 import io.restassured.response.Response;
 
-import static io.restassured.RestAssured.given;
-
-import com.grocery.store.api.client.RequestBuilder;
-
 public class CartService {
 
-    public Response createCart() {
-        return given()
-                .spec(RequestBuilder.getSpec())
-                .when()
-                .post("/carts");
+    private static final String BASE_PATH = "/carts";
+
+    // Create empty cart
+    public Response createEmptyCart() {
+        return ApiClient.post(BASE_PATH, null);
     }
 
-    public Response addItemToCart(String cartId, CartRequest request) {
-        return given()
-                .spec(RequestBuilder.getSpec())
-                .body(request)
-                .when()
-                .post("/carts/" + cartId + "/items");
+    // Add product to cart
+    public Response addProductToCart(String cartId, int productId) {
+
+        CartRequest request = new CartRequest();
+        request.setProductId(productId);
+
+        return ApiClient.post(BASE_PATH + "/" + cartId + "/items", request);
     }
 }

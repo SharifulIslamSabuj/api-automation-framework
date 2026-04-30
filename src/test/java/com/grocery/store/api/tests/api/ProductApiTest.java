@@ -5,9 +5,9 @@ import org.testng.annotations.Test;
 
 public class ProductApiTest {
 
-    ProductService productService = new ProductService();
+    private final ProductService productService = new ProductService();
 
-    @Test(description = "Verify all products can be retrieved")
+    @Test(groups = {"smoke", "regression"})
     public void getAllProductsShouldSucceed() {
 
         productService.getAllProducts()
