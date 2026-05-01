@@ -1,12 +1,13 @@
 package com.grocery.store.api.tests.api;
 
+import com.grocery.store.api.base.BaseTest;
 import com.grocery.store.api.services.CartService;
 import com.grocery.store.api.services.ProductService;
 import com.grocery.store.api.client.ResponseSpecFactory;
 import com.grocery.store.api.utils.AssertionUtil;
 import org.testng.annotations.Test;
 
-public class CartApiTest {
+public class CartApiTest extends BaseTest {
 
     private final CartService cartService = new CartService();
     private final ProductService productService = new ProductService();

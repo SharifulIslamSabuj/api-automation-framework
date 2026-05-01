@@ -1,10 +1,11 @@
 package com.grocery.store.api.tests.api;
 
+import com.grocery.store.api.base.BaseTest;
 import com.grocery.store.api.services.StatusService;
 import org.hamcrest.Matchers;
 import org.testng.annotations.Test;
 
-public class StatusApiTest {
+public class StatusApiTest extends BaseTest {
 
     private final StatusService statusService = new StatusService();
 

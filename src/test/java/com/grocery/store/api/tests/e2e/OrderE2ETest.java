@@ -1,5 +1,6 @@
 package com.grocery.store.api.tests.e2e;
 
+import com.grocery.store.api.base.BaseTest;
 import com.grocery.store.api.models.request.OrderRequest;
 import com.grocery.store.api.models.response.OrderResponse;
 import com.grocery.store.api.services.CartService;
@@ -11,7 +12,7 @@ import com.grocery.store.api.utils.AssertionUtil;
 import com.grocery.store.api.utils.TokenManager;
 import org.testng.annotations.Test;
 
-public class OrderE2ETest {
+public class OrderE2ETest extends BaseTest {
 
     private final ProductService productService = new ProductService();
     private final CartService cartService = new CartService();
