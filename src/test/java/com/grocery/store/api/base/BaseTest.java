@@ -23,7 +23,7 @@ public class BaseTest {
         // Extra safety: log only when validation fails
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
 
-        System.out.println("✅ BaseTest Setup Completed");
-        System.out.println("🌐 Base URI: " + RestAssured.baseURI);
+        System.out.println("BaseTest Setup Completed");
+        System.out.println("Base URI: " + RestAssured.baseURI);
     }
 }

@@ -13,13 +13,13 @@ public class ConfigManager {
                 .getResourceAsStream("config.properties")) {
 
             if (input == null) {
-                throw new RuntimeException("❌ config/config.properties not found in resources");
+                throw new RuntimeException("Config/config.properties not found in resources");
             }
 
             properties.load(input);
 
         } catch (Exception e) {
-            throw new RuntimeException("❌ Failed to load config.properties", e);
+            throw new RuntimeException("Failed to load config.properties", e);
         }
     }
 
