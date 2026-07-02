@@ -1,13 +1,13 @@
 package com.grocery.store.api.services;
 
 import com.grocery.store.api.client.ApiClient;
+import com.grocery.store.api.client.ApiRoutes;
 import com.grocery.store.api.client.ResponseWrapper;
 import com.grocery.store.api.models.request.OrderRequest;
-import com.grocery.store.api.utils.TokenManager;
 
 public class OrderService {
 
-    private static final String BASE_PATH = "/orders";
+    private static final String BASE_PATH = ApiRoutes.ORDERS;
 
     public ResponseWrapper placeOrder(OrderRequest request, String token) {
 

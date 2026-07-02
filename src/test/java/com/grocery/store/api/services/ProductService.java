@@ -1,6 +1,7 @@
 package com.grocery.store.api.services;
 
 import com.grocery.store.api.client.ApiClient;
+import com.grocery.store.api.client.ApiRoutes;
 import com.grocery.store.api.client.ResponseWrapper;
 import io.restassured.http.Method;
 
@@ -9,7 +10,7 @@ import java.util.Map;
 
 public class ProductService {
 
-    private static final String BASE_PATH = "/products";
+    private static final String BASE_PATH = ApiRoutes.PRODUCTS;
 
     public ResponseWrapper getAllProducts() {
 

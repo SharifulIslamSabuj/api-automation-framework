@@ -1,7 +1,5 @@
 package com.grocery.store.api.execution;
 
-import java.util.List;
-
 public final class ExecutionController {
 
     private ExecutionController() {}
@@ -36,30 +34,5 @@ public final class ExecutionController {
             return false;
         }
         return groups.contains("integration") || groups.equals("all") || groups.isEmpty();
-    }
-
-    public static boolean shouldRun(String groups) {
-        if (groups == null || groups.trim().isEmpty()) {
-            return true;
-        }
-
-        List<String> testGroups = List.of(groups.split(","));
-        String activeGroups = getGroups().toLowerCase();
-
-        if (activeGroups.equals("all") || activeGroups.isEmpty()) {
-            return true;
-        }
-
-        for (String testGroup : testGroups) {
-            if (activeGroups.contains(testGroup.trim().toLowerCase())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static String getRecommendedGroups() {
-        return isCI() ? "smoke,regression" : "all";
     }
 }

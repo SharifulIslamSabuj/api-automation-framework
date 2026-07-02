@@ -4,8 +4,6 @@ import com.grocery.store.api.client.ResponseWrapper;
 import com.grocery.store.api.config.ConfigManager;
 import com.grocery.store.api.utils.AssertionUtil;
 import io.restassured.RestAssured;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import org.testng.annotations.BeforeSuite;
 
 public abstract class BaseTest {
@@ -15,15 +13,6 @@ public abstract class BaseTest {
 
         // Set Base URI globally for all API tests
         RestAssured.baseURI = ConfigManager.getBaseUrl();
-
-        // Enable request & response logging
-        RestAssured.filters(
-                new RequestLoggingFilter(),
-                new ResponseLoggingFilter()
-        );
-
-        // Extra safety: log only when validation fails
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
 
         System.out.println("BaseTest Setup Completed");
         System.out.println("Base URI: " + RestAssured.baseURI);

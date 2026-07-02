@@ -1,6 +1,5 @@
 package com.grocery.store.api.testdata.generator;
 
-import com.grocery.store.api.models.request.ClientRequest;
 import com.grocery.store.api.models.request.OrderRequest;
 
 public class TestDataFactory {
@@ -17,14 +16,6 @@ public class TestDataFactory {
 
     public static String clientEmail() {
         return "user" + System.currentTimeMillis() + "@test.com";
-    }
-
-    public static ClientRequest validClient() {
-        ClientRequest request = new ClientRequest();
-        long timestamp = System.currentTimeMillis();
-        request.setClientName("AutoUser_" + timestamp);
-        request.setClientEmail("user" + timestamp + "@test.com");
-        return request;
     }
 
     // =========================
@@ -49,13 +40,5 @@ public class TestDataFactory {
         request.setCartId(cartId);
         request.setCustomerName("Customer_" + timestamp);
         return request;
-    }
-
-    // =========================
-    // GENERAL
-    // =========================
-
-    public static int randomProductId() {
-        return 1225; // fallback controlled test data (can improve later)
     }
 }
