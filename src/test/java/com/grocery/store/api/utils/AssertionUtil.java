@@ -1,55 +1,56 @@
 package com.grocery.store.api.utils;
 
-import io.restassured.response.Response;
-import org.testng.Assert;
+import com.grocery.store.api.client.ResponseWrapper;
 
 public class AssertionUtil {
 
     private AssertionUtil() {}
 
+    // =========================
+    // STATUS CODE ASSERTION
+    // =========================
 
-    // NULL VALIDATION
-    public static void assertNotNull(Object actual, String message) {
-        Assert.assertNotNull(actual, message);
+    public static void assertStatusCode(ResponseWrapper response, int expected) {
+
+        int actual = response.getStatusCode();
+
+        if (actual != expected) {
+            throw new AssertionError(
+                    "❌ Status mismatch. Expected: " + expected + " but got: " + actual
+            );
+        }
     }
 
+    // =========================
+    // NULL ASSERTION
+    // =========================
 
-    // EMPTY VALIDATION
-    public static void assertNotEmpty(String value, String message) {
-        Assert.assertTrue(
-                value != null && !value.trim().isEmpty(),
-                message
-        );
+    public static void assertNotNull(Object value, String fieldName) {
+
+        if (value == null) {
+            throw new AssertionError("❌ " + fieldName + " is NULL");
+        }
     }
 
+    // =========================
+    // EMPTY ASSERTION
+    // =========================
 
-    // BOOLEAN VALIDATION
+    public static void assertNotEmpty(String value, String fieldName) {
+
+        if (value == null || value.trim().isEmpty()) {
+            throw new AssertionError("❌ " + fieldName + " is EMPTY");
+        }
+    }
+
+    // =========================
+    // BOOLEAN ASSERTION
+    // =========================
+
     public static void assertTrue(boolean condition, String message) {
-        Assert.assertTrue(condition, message);
-    }
 
-
-    // EQUALS VALIDATION
-    public static void assertEquals(Object actual, Object expected, String message) {
-        Assert.assertEquals(actual, expected, message);
-    }
-
-
-    // STATUS CODE VALIDATION
-    public static void assertStatusCode(Response response, int expectedCode) {
-        Assert.assertEquals(
-                response.getStatusCode(),
-                expectedCode,
-                "Status code mismatch"
-        );
-    }
-
-
-    // RESPONSE BODY VALIDATION
-    public static void assertBodyContains(Response response, String expectedText) {
-        Assert.assertTrue(
-                response.asString().contains(expectedText),
-                "Response does not contain: " + expectedText
-        );
+        if (!condition) {
+            throw new AssertionError("❌ Assertion failed: " + message);
+        }
     }
 }

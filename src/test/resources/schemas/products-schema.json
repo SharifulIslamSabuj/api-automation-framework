@@ -1,0 +1,21 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "category", "name", "inStock"],
+    "properties": {
+      "id": {
+        "type": "integer"
+      },
+      "category": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "inStock": {
+        "type": "boolean"
+      }
+    }
+  }
+}

@@ -1,24 +1,33 @@
 package com.grocery.store.api.services;
 
 import com.grocery.store.api.client.ApiClient;
-import com.grocery.store.api.models.request.CartRequest;
-import io.restassured.response.Response;
+import com.grocery.store.api.client.ResponseWrapper;
+import com.grocery.store.api.testdata.generator.TestDataFactory;
+
+import java.util.Map;
 
 public class CartService {
 
     private static final String BASE_PATH = "/carts";
 
-    // Create empty cart
-    public Response createEmptyCart() {
-        return ApiClient.post(BASE_PATH, null);
+    public ResponseWrapper createEmptyCart() {
+
+        return new ResponseWrapper(
+                ApiClient.post(BASE_PATH, null)
+        );
     }
 
-    // Add product to cart
-    public Response addProductToCart(String cartId, int productId) {
+    public ResponseWrapper addProductToCart(String cartId, int productId) {
 
-        CartRequest request = new CartRequest();
-        request.setProductId(productId);
+        String endpoint = BASE_PATH + "/" + cartId + "/items";
 
-        return ApiClient.post(BASE_PATH + "/" + cartId + "/items", request);
+        Map<String, Object> body = Map.of(
+                "productId", productId,
+                "quantity", TestDataFactory.defaultQuantity()
+        );
+
+        return new ResponseWrapper(
+                ApiClient.post(endpoint, body)
+        );
     }
 }

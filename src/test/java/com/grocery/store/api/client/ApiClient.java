@@ -1,78 +1,79 @@
 package com.grocery.store.api.client;
 
-import io.qameta.allure.restassured.AllureRestAssured;
+import com.grocery.store.api.config.ConfigManager;
+import com.grocery.store.api.observability.ObservabilityManager;
+import io.restassured.http.Method;
 import io.restassured.response.Response;
+
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
-public class ApiClient {
+public final class ApiClient {
 
     private ApiClient() {}
 
-    public static Response get(String endpoint) {
+    public static Response request(Method method,
+                                   String endpoint,
+                                   Object body,
+                                   Map<String, String> headers) {
 
-        return given()
-                .spec(RequestSpecFactory.getSpec())
-                .filter(new AllureRestAssured())
-                .when()
-                .get(endpoint);
+        int maxRetry = ConfigManager.getRetryCount();
+        int retryDelay = ConfigManager.getRetryDelay();
+
+        Response lastResponse = null;
+
+        for (int attempt = 0; attempt <= maxRetry; attempt++) {
+
+            try {
+
+                var req = given()
+                        .spec(RequestSpecFactory.getSpec());
+
+                if (headers != null) req.headers(headers);
+                if (body != null) req.body(body);
+
+                Response response = req.request(method, endpoint);
+                lastResponse = response;
+
+                int status = response.getStatusCode();
+
+                if (status < 500) {
+                    if (status >= 400) {
+                        ObservabilityManager.logClientError(endpoint, status);
+                    }
+                    return response;
+                }
+
+                ObservabilityManager.logServerError(endpoint, status);
+
+                Thread.sleep(retryDelay);
+
+            } catch (Exception e) {
+
+                ObservabilityManager.logNetworkError(endpoint, e.getMessage());
+
+                try {
+                    Thread.sleep(retryDelay);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+
+        return lastResponse;
+    }
+
+    public static Response get(String endpoint) {
+        return request(Method.GET, endpoint, null, null);
     }
 
     public static Response post(String endpoint, Object body) {
-
-        if (body == null) {
-            return given()
-                    .spec(RequestSpecFactory.getSpec())
-                    .filter(new AllureRestAssured())
-                    .when()
-                    .post(endpoint);
-        }
-
-        return given()
-                .spec(RequestSpecFactory.getSpec())
-                .filter(new AllureRestAssured())
-                .body(body)
-                .when()
-                .post(endpoint);
+        return request(Method.POST, endpoint, body, null);
     }
 
     public static Response postWithAuth(String endpoint, Object body, String token) {
-
-        if (body == null) {
-            return given()
-                    .spec(RequestSpecFactory.getSpec())
-                    .filter(new AllureRestAssured())
-                    .header("Authorization", "Bearer " + token)
-                    .when()
-                    .post(endpoint);
-        }
-
-        return given()
-                .spec(RequestSpecFactory.getSpec())
-                .filter(new AllureRestAssured())
-                .header("Authorization", "Bearer " + token)
-                .body(body)
-                .when()
-                .post(endpoint);
-    }
-
-    public static Response getWithAuth(String endpoint, String token) {
-
-        return given()
-                .spec(RequestSpecFactory.getSpec())
-                .filter(new AllureRestAssured())
-                .header("Authorization", "Bearer " + token)
-                .when()
-                .get(endpoint);
-    }
-
-    public static Response deleteWithAuth(String endpoint, String token) {
-
-        return given()
-                .spec(RequestSpecFactory.getSpec())
-                .filter(new AllureRestAssured())
-                .header("Authorization", "Bearer " + token)
-                .when()
-                .delete(endpoint);
+        return request(Method.POST, endpoint, body,
+                Map.of("Authorization", "Bearer " + token));
     }
 }

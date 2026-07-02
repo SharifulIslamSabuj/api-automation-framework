@@ -1,12 +1,14 @@
 package com.grocery.store.api.base;
 
+import com.grocery.store.api.client.ResponseWrapper;
 import com.grocery.store.api.config.ConfigManager;
+import com.grocery.store.api.utils.AssertionUtil;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import org.testng.annotations.BeforeSuite;
 
-public class BaseTest {
+public abstract class BaseTest {
 
     @BeforeSuite(alwaysRun = true)
     public void setupSuite() {
@@ -25,5 +27,13 @@ public class BaseTest {
 
         System.out.println("BaseTest Setup Completed");
         System.out.println("Base URI: " + RestAssured.baseURI);
+    }
+
+    protected void validate(ResponseWrapper response, String schema) {
+        response.validateSchema(schema);
+    }
+
+    protected void assertStatus(ResponseWrapper response, int expected) {
+        AssertionUtil.assertStatusCode(response, expected);
     }
 }

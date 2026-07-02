@@ -1,22 +1,32 @@
 package com.grocery.store.api.services;
 
 import com.grocery.store.api.client.ApiClient;
+import com.grocery.store.api.client.ResponseWrapper;
 import com.grocery.store.api.models.request.ClientRequest;
-import io.restassured.response.Response;
+import io.restassured.http.Method;
+
+import java.util.Map;
 
 public class ClientService {
 
     private static final String BASE_PATH = "/api-clients";
 
+    public ResponseWrapper createClient(ClientRequest request) {
 
-    // Create client WITHOUT auth (for token generation)
-    public Response createClient(ClientRequest request) {
-        return ApiClient.post(BASE_PATH, request);
+        return new ResponseWrapper(
+                ApiClient.request(Method.POST, BASE_PATH, request, null)
+        );
     }
 
+    public ResponseWrapper createClient(ClientRequest request, String token) {
 
-    // Create client WITH auth (if needed in future scenarios)
-    public Response createClient(ClientRequest request, String token) {
-        return ApiClient.postWithAuth(BASE_PATH, request, token);
+        return new ResponseWrapper(
+                ApiClient.request(
+                        Method.POST,
+                        BASE_PATH,
+                        request,
+                        Map.of("Authorization", "Bearer " + token)
+                )
+        );
     }
 }

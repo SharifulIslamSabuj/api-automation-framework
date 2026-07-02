@@ -28,11 +28,7 @@ public class TokenManager {
         request.setClientEmail("autouser" + timestamp + "@test.com");
 
         String accessToken = clientService.createClient(request)
-                .then()
-                .statusCode(201)
-                .extract()
-                .jsonPath()
-                .getString("accessToken");
+                .getString("accessToken");   // ✅ ACME WAY
 
         if (accessToken == null || accessToken.isEmpty()) {
             throw new RuntimeException("Access token is null/empty");
