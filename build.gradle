@@ -13,13 +13,10 @@ dependencies {
 
     testImplementation 'io.rest-assured:rest-assured:6.0.0'
     testImplementation 'io.rest-assured:json-path:6.0.0'
-    testImplementation 'io.rest-assured:xml-path:6.0.0'
     testImplementation 'io.rest-assured:json-schema-validator:6.0.0'
 
     testImplementation 'org.testng:testng:7.12.0'
-    testImplementation 'com.thedeanda:lorem:2.2'
 
-    // FIXED: correct scope
     testImplementation 'io.qameta.allure:allure-testng:2.32.0'
     testImplementation 'io.qameta.allure:allure-rest-assured:2.32.0'
 }
@@ -31,9 +28,29 @@ def allureReportDir = layout.buildDirectory.dir("allure-report").get().asFile
 println "allureResultsDir: $allureResultsDir"
 println "allureReportDir: $allureReportDir"
 
+def isAllureCommandlineAvailable = {
+    try {
+        def checkCommand = isWindows ? ["cmd", "/c", "where", "allure"] : ["which", "allure"]
+        def process = checkCommand.execute()
+        process.waitFor()
+        return process.exitValue() == 0
+    } catch (Exception ignored) {
+        return false
+    }
+}
+
 tasks.register('generateSingleAllureHtml', Exec) {
     group = "reporting"
-    description = "Generates single-file Allure HTML report"
+    description = "Generates single-file Allure HTML report (skipped if Allure Commandline is not installed)"
+
+    onlyIf {
+        def available = isAllureCommandlineAvailable()
+        if (!available) {
+            logger.warn("Allure Commandline not found on PATH — skipping Allure HTML report generation. " +
+                    "Install Allure Commandline to enable this step.")
+        }
+        available
+    }
 
     commandLine = isWindows ?
             ["cmd", "/c", "allure", "generate",
@@ -70,10 +87,10 @@ test {
         }
     }
 
-    ignoreFailures = true
-
     systemProperty "allure.results.directory",
             layout.buildDirectory.dir("allure-results").get().asFile.absolutePath
+
+    systemProperty "env", System.getProperty("env", "dev")
 
     finalizedBy tasks.generateSingleAllureHtml
 }

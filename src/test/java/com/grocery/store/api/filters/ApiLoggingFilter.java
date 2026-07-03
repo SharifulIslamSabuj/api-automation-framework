@@ -1,7 +1,6 @@
 package com.grocery.store.api.filters;
 
 import com.grocery.store.api.observability.ObservabilityManager;
-import io.qameta.allure.Allure;
 import io.restassured.filter.Filter;
 import io.restassured.filter.FilterContext;
 import io.restassured.response.Response;
@@ -29,18 +28,8 @@ public class ApiLoggingFilter implements Filter {
         // =========================
         String method = requestSpec.getMethod();
         String uri = requestSpec.getURI();
-        String requestBody = requestSpec.getBody() != null
-                ? requestSpec.getBody().toString()
-                : "EMPTY";
 
         ObservabilityManager.logRequest(method, uri);
-
-        Allure.addAttachment(
-                "API REQUEST",
-                "METHOD: " + method +
-                        "\nURI: " + uri +
-                        "\nBODY: " + requestBody
-        );
 
         // =========================
         // EXECUTION TIMER START
@@ -73,16 +62,6 @@ public class ApiLoggingFilter implements Filter {
         if (responseBody == null || responseBody.isEmpty()) {
             ObservabilityManager.logValidationError("Empty response body for: " + uri);
         }
-
-        // =========================
-        // ALLURE ATTACHMENTS
-        // =========================
-        Allure.addAttachment(
-                "API RESPONSE",
-                "STATUS: " + statusCode +
-                        "\nTIME: " + responseTime + " ms" +
-                        "\nBODY: " + responseBody
-        );
 
         return response;
     }

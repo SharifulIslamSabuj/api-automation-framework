@@ -16,7 +16,7 @@ public class AssertionUtil {
 
         if (actual != expected) {
             throw new AssertionError(
-                    "❌ Status mismatch. Expected: " + expected + " but got: " + actual
+                    "Status mismatch. Expected: " + expected + " but got: " + actual
             );
         }
     }
@@ -28,7 +28,7 @@ public class AssertionUtil {
     public static void assertNotNull(Object value, String fieldName) {
 
         if (value == null) {
-            throw new AssertionError("❌ " + fieldName + " is NULL");
+            throw new AssertionError(fieldName + " is NULL");
         }
     }
 
@@ -39,7 +39,7 @@ public class AssertionUtil {
     public static void assertNotEmpty(String value, String fieldName) {
 
         if (value == null || value.trim().isEmpty()) {
-            throw new AssertionError("❌ " + fieldName + " is EMPTY");
+            throw new AssertionError(fieldName + " is EMPTY");
         }
     }
 
@@ -50,7 +50,7 @@ public class AssertionUtil {
     public static void assertTrue(boolean condition, String message) {
 
         if (!condition) {
-            throw new AssertionError("❌ Assertion failed: " + message);
+            throw new AssertionError("Assertion failed: " + message);
         }
     }
 }

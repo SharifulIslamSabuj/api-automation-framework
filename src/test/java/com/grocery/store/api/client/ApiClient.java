@@ -18,10 +18,10 @@ public final class ApiClient {
                                    Object body,
                                    Map<String, String> headers) {
 
-        int maxRetry = ConfigManager.getRetryCount();
+        // Only safe (idempotent) GET requests are retried by default.
+        boolean retryable = method == Method.GET;
+        int maxRetry = retryable ? ConfigManager.getRetryCount() : 0;
         int retryDelay = ConfigManager.getRetryDelay();
-
-        Response lastResponse = null;
 
         for (int attempt = 0; attempt <= maxRetry; attempt++) {
 
@@ -34,8 +34,6 @@ public final class ApiClient {
                 if (body != null) req.body(body);
 
                 Response response = req.request(method, endpoint);
-                lastResponse = response;
-
                 int status = response.getStatusCode();
 
                 if (status < 500) {
@@ -47,21 +45,41 @@ public final class ApiClient {
 
                 ObservabilityManager.logServerError(endpoint, status);
 
-                Thread.sleep(retryDelay);
+                boolean transientStatus = status == 502 || status == 503 || status == 504;
+
+                if (transientStatus && attempt < maxRetry) {
+                    ObservabilityManager.logRetry(method.name(), endpoint, "HTTP " + status, attempt, maxRetry, retryDelay);
+                    sleep(retryDelay);
+                    continue;
+                }
+
+                return response;
 
             } catch (Exception e) {
 
                 ObservabilityManager.logNetworkError(endpoint, e.getMessage());
 
-                try {
-                    Thread.sleep(retryDelay);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
+                if (attempt < maxRetry) {
+                    ObservabilityManager.logRetry(method.name(), endpoint, e.getClass().getSimpleName(), attempt, maxRetry, retryDelay);
+                    sleep(retryDelay);
+                    continue;
                 }
+
+                throw new RuntimeException(
+                        "API request failed after " + (attempt + 1) + " attempt(s): " + method + " " + endpoint, e
+                );
             }
         }
 
-        return lastResponse;
+        throw new RuntimeException("API request failed: " + method + " " + endpoint);
+    }
+
+    private static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     public static Response get(String endpoint) {

@@ -1,6 +1,7 @@
 package com.grocery.store.api.services;
 
 import com.grocery.store.api.client.ApiClient;
+import com.grocery.store.api.client.ApiRoutes;
 import com.grocery.store.api.client.ResponseWrapper;
 import com.grocery.store.api.testdata.generator.TestDataFactory;
 
@@ -8,7 +9,7 @@ import java.util.Map;
 
 public class CartService {
 
-    private static final String BASE_PATH = "/carts";
+    private static final String BASE_PATH = ApiRoutes.CARTS;
 
     public ResponseWrapper createEmptyCart() {
 

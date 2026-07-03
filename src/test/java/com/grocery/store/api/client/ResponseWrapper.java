@@ -38,7 +38,6 @@ public class ResponseWrapper {
         return response.as(clazz);
     }
 
-    // ⭐ FIX: REQUIRED FOR PRODUCT TEST
     @SuppressWarnings("unchecked")
     public <T> List<T> asList(String path) {
         return response.jsonPath().getList(path);
