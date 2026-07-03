@@ -28,9 +28,29 @@ def allureReportDir = layout.buildDirectory.dir("allure-report").get().asFile
 println "allureResultsDir: $allureResultsDir"
 println "allureReportDir: $allureReportDir"
 
+def isAllureCommandlineAvailable = {
+    try {
+        def checkCommand = isWindows ? ["cmd", "/c", "where", "allure"] : ["which", "allure"]
+        def process = checkCommand.execute()
+        process.waitFor()
+        return process.exitValue() == 0
+    } catch (Exception ignored) {
+        return false
+    }
+}
+
 tasks.register('generateSingleAllureHtml', Exec) {
     group = "reporting"
-    description = "Generates single-file Allure HTML report"
+    description = "Generates single-file Allure HTML report (skipped if Allure Commandline is not installed)"
+
+    onlyIf {
+        def available = isAllureCommandlineAvailable()
+        if (!available) {
+            logger.warn("Allure Commandline not found on PATH — skipping Allure HTML report generation. " +
+                    "Install Allure Commandline to enable this step.")
+        }
+        available
+    }
 
     commandLine = isWindows ?
             ["cmd", "/c", "allure", "generate",
@@ -69,6 +89,8 @@ test {
 
     systemProperty "allure.results.directory",
             layout.buildDirectory.dir("allure-results").get().asFile.absolutePath
+
+    systemProperty "env", System.getProperty("env", "dev")
 
     finalizedBy tasks.generateSingleAllureHtml
 }
