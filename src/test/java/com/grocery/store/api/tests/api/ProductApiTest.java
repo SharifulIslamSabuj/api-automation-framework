@@ -5,6 +5,9 @@ import com.grocery.store.api.services.ProductService;
 import com.grocery.store.api.utils.AssertionUtil;
 import org.testng.annotations.Test;
 
+import java.util.List;
+import java.util.Map;
+
 public class ProductApiTest extends BaseTest {
 
     private final ProductService productService = new ProductService();
@@ -22,5 +25,52 @@ public class ProductApiTest extends BaseTest {
         );
 
         validate(response, "products-schema.json");
+    }
+
+    @Test(groups = {"regression"})
+    public void getProductByIdShouldReturnProduct() {
+
+        int productId = productService.getFirstProductId();
+
+        var response = productService.getProduct(productId);
+
+        assertStatus(response, 200);
+
+        AssertionUtil.assertTrue(
+                String.valueOf(productId).equals(response.getString("id")),
+                "Returned product id should match the requested id"
+        );
+        AssertionUtil.assertNotEmpty(response.getString("name"), "name");
+        AssertionUtil.assertNotEmpty(response.getString("category"), "category");
+    }
+
+    @Test(groups = {"regression"})
+    public void getUnknownProductShouldReturnNotFound() {
+
+        var response = productService.getProduct(999999999);
+
+        assertStatus(response, 404);
+
+        AssertionUtil.assertTrue(
+                response.getString("error").contains("No product with id"),
+                "Error message should indicate the product was not found"
+        );
+    }
+
+    @Test(groups = {"regression"})
+    public void getProductsByCategoryShouldReturnOnlyThatCategory() {
+
+        var response = productService.getProductsByCategory("fresh-produce");
+
+        assertStatus(response, 200);
+
+        List<Map<String, Object>> products = response.asList("$");
+
+        AssertionUtil.assertTrue(!products.isEmpty(), "Filtered category result should not be empty");
+
+        boolean allMatchCategory = products.stream()
+                .allMatch(p -> "fresh-produce".equals(p.get("category")));
+
+        AssertionUtil.assertTrue(allMatchCategory, "All returned products should belong to the requested category");
     }
 }

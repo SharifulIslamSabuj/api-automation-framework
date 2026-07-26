@@ -1,12 +1,12 @@
 {
   "type": "object",
-  "required": ["created", "cartId"],
+  "required": ["created", "itemId"],
   "properties": {
     "created": {
       "type": "boolean"
     },
-    "cartId": {
-      "type": "string"
+    "itemId": {
+      "type": "integer"
     }
   }
 }

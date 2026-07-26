@@ -31,4 +31,18 @@ public class CartService {
                 ApiClient.post(endpoint, body)
         );
     }
+
+    public ResponseWrapper getCart(String cartId) {
+
+        return new ResponseWrapper(
+                ApiClient.get(BASE_PATH + "/" + cartId)
+        );
+    }
+
+    public ResponseWrapper removeProductFromCart(String cartId, String itemId) {
+
+        return new ResponseWrapper(
+                ApiClient.delete(BASE_PATH + "/" + cartId + "/items/" + itemId)
+        );
+    }
 }

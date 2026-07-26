@@ -28,4 +28,21 @@ public class ClientApiTest extends BaseTest {
         AssertionUtil.assertNotNull(token, "accessToken");
         AssertionUtil.assertNotEmpty(token, "accessToken");
     }
+
+    @Test(groups = {"regression"})
+    public void registerDuplicateClientShouldBeRejected() {
+
+        ClientRequest request = new ClientRequest();
+        request.setClientName(TestDataFactory.clientName());
+        request.setClientEmail(TestDataFactory.clientEmail());
+
+        clientService.createClient(request);
+        var duplicateResponse = clientService.createClient(request);
+
+        assertStatus(duplicateResponse, 409);
+        AssertionUtil.assertTrue(
+                duplicateResponse.getString("error").contains("already registered"),
+                "Error message should indicate the client is already registered"
+        );
+    }
 }

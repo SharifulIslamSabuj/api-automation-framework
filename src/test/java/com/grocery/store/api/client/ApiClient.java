@@ -92,4 +92,18 @@ public final class ApiClient {
         return request(Method.POST, endpoint, body,
                 Map.of("Authorization", "Bearer " + token));
     }
+
+    public static Response delete(String endpoint) {
+        return request(Method.DELETE, endpoint, null, null);
+    }
+
+    public static Response getWithAuth(String endpoint, String token) {
+        return request(Method.GET, endpoint, null,
+                Map.of("Authorization", "Bearer " + token));
+    }
+
+    public static Response deleteWithAuth(String endpoint, String token) {
+        return request(Method.DELETE, endpoint, null,
+                Map.of("Authorization", "Bearer " + token));
+    }
 }

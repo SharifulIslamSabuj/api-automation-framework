@@ -19,4 +19,25 @@ public class OrderService {
                 )
         );
     }
+
+    public ResponseWrapper placeOrder(OrderRequest request) {
+
+        return new ResponseWrapper(
+                ApiClient.post(BASE_PATH, request)
+        );
+    }
+
+    public ResponseWrapper getOrder(String orderId, String token) {
+
+        return new ResponseWrapper(
+                ApiClient.getWithAuth(BASE_PATH + "/" + orderId, token)
+        );
+    }
+
+    public ResponseWrapper deleteOrder(String orderId, String token) {
+
+        return new ResponseWrapper(
+                ApiClient.deleteWithAuth(BASE_PATH + "/" + orderId, token)
+        );
+    }
 }

@@ -19,6 +19,20 @@ public class ProductService {
         );
     }
 
+    public ResponseWrapper getProduct(int productId) {
+
+        return new ResponseWrapper(
+                ApiClient.get(BASE_PATH + "/" + productId)
+        );
+    }
+
+    public ResponseWrapper getProductsByCategory(String category) {
+
+        return new ResponseWrapper(
+                ApiClient.get(BASE_PATH + "?category=" + category)
+        );
+    }
+
     public int getFirstProductId() {
 
         List<Map<String, Object>> products =
