@@ -6,6 +6,7 @@ import com.grocery.store.api.services.ClientService;
 import com.grocery.store.api.testdata.generator.TestDataFactory;
 import com.grocery.store.api.utils.AssertionUtil;
 import com.grocery.store.api.utils.TokenManager;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class ClientApiTest extends BaseTest {
@@ -25,7 +26,6 @@ public class ClientApiTest extends BaseTest {
 
         String token = response.getString("accessToken");
 
-        AssertionUtil.assertNotNull(token, "accessToken");
         AssertionUtil.assertNotEmpty(token, "accessToken");
     }
 
@@ -40,7 +40,7 @@ public class ClientApiTest extends BaseTest {
         var duplicateResponse = clientService.createClient(request);
 
         assertStatus(duplicateResponse, 409);
-        AssertionUtil.assertTrue(
+        Assert.assertTrue(
                 duplicateResponse.getString("error").contains("already registered"),
                 "Error message should indicate the client is already registered"
         );

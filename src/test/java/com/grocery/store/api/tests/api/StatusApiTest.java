@@ -2,7 +2,7 @@ package com.grocery.store.api.tests.api;
 
 import com.grocery.store.api.base.BaseTest;
 import com.grocery.store.api.services.StatusService;
-import com.grocery.store.api.utils.AssertionUtil;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class StatusApiTest extends BaseTest {
@@ -18,11 +18,6 @@ public class StatusApiTest extends BaseTest {
 
         String status = response.getString("status");
 
-        AssertionUtil.assertNotNull(status, "status");
-
-        AssertionUtil.assertTrue(
-                "UP".equals(status),
-                "Service status should be UP"
-        );
+        Assert.assertEquals(status, "UP", "Service status should be UP");
     }
 }

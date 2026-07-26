@@ -4,6 +4,7 @@ import com.grocery.store.api.base.BaseTest;
 import com.grocery.store.api.services.CartService;
 import com.grocery.store.api.services.ProductService;
 import com.grocery.store.api.utils.AssertionUtil;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class CartApiTest extends BaseTest {
@@ -23,11 +24,11 @@ public class CartApiTest extends BaseTest {
 
         String cartId = cartResponse.getString("cartId");
 
-        AssertionUtil.assertNotNull(cartId, "cartId");
         AssertionUtil.assertNotEmpty(cartId, "cartId");
 
         // Add product + schema validation
         var addResponse = cartService.addProductToCart(cartId, productId);
+        assertStatus(addResponse, 201);
         validate(addResponse, "cart-schema.json");
     }
 
@@ -42,8 +43,9 @@ public class CartApiTest extends BaseTest {
         var cartResponse = cartService.getCart(cartId);
 
         assertStatus(cartResponse, 200);
-        AssertionUtil.assertTrue(
-                cartResponse.getString("items[0].productId").equals(String.valueOf(productId)),
+        Assert.assertEquals(
+                cartResponse.getString("items[0].productId"),
+                String.valueOf(productId),
                 "Cart should contain the product that was added"
         );
     }
@@ -56,7 +58,7 @@ public class CartApiTest extends BaseTest {
         var response = cartService.addProductToCart("nonexistent-cart-id", productId);
 
         assertStatus(response, 404);
-        AssertionUtil.assertTrue(
+        Assert.assertTrue(
                 response.getString("error").contains("No cart with id"),
                 "Error message should indicate the cart was not found"
         );
@@ -72,7 +74,7 @@ public class CartApiTest extends BaseTest {
         var duplicateResponse = cartService.addProductToCart(cartId, productId);
 
         assertStatus(duplicateResponse, 400);
-        AssertionUtil.assertTrue(
+        Assert.assertTrue(
                 duplicateResponse.getString("error").contains("already been added"),
                 "Error message should indicate the product is already in the cart"
         );
@@ -89,7 +91,7 @@ public class CartApiTest extends BaseTest {
         assertStatus(removeResponse, 204);
 
         var cartAfterRemoval = cartService.getCart(cartId);
-        AssertionUtil.assertTrue(
+        Assert.assertTrue(
                 cartAfterRemoval.asList("items").isEmpty(),
                 "Cart should have no items after removal"
         );

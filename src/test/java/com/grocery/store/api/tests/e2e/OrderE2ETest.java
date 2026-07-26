@@ -44,7 +44,6 @@ public class OrderE2ETest extends BaseTest {
 
         OrderResponse response = orderResponse.as(OrderResponse.class);
 
-        AssertionUtil.assertNotNull(response.getOrderId(), "orderId");
         AssertionUtil.assertNotEmpty(response.getOrderId(), "orderId");
     }
 }

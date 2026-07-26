@@ -22,17 +22,6 @@ public class AssertionUtil {
     }
 
     // =========================
-    // NULL ASSERTION
-    // =========================
-
-    public static void assertNotNull(Object value, String fieldName) {
-
-        if (value == null) {
-            throw new AssertionError(fieldName + " is NULL");
-        }
-    }
-
-    // =========================
     // EMPTY ASSERTION
     // =========================
 
@@ -40,17 +29,6 @@ public class AssertionUtil {
 
         if (value == null || value.trim().isEmpty()) {
             throw new AssertionError(fieldName + " is EMPTY");
-        }
-    }
-
-    // =========================
-    // BOOLEAN ASSERTION
-    // =========================
-
-    public static void assertTrue(boolean condition, String message) {
-
-        if (!condition) {
-            throw new AssertionError("Assertion failed: " + message);
         }
     }
 }

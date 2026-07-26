@@ -3,6 +3,7 @@ package com.grocery.store.api.tests.api;
 import com.grocery.store.api.base.BaseTest;
 import com.grocery.store.api.services.ProductService;
 import com.grocery.store.api.utils.AssertionUtil;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -36,8 +37,9 @@ public class ProductApiTest extends BaseTest {
 
         assertStatus(response, 200);
 
-        AssertionUtil.assertTrue(
-                String.valueOf(productId).equals(response.getString("id")),
+        Assert.assertEquals(
+                response.getString("id"),
+                String.valueOf(productId),
                 "Returned product id should match the requested id"
         );
         AssertionUtil.assertNotEmpty(response.getString("name"), "name");
@@ -51,7 +53,7 @@ public class ProductApiTest extends BaseTest {
 
         assertStatus(response, 404);
 
-        AssertionUtil.assertTrue(
+        Assert.assertTrue(
                 response.getString("error").contains("No product with id"),
                 "Error message should indicate the product was not found"
         );
@@ -66,11 +68,11 @@ public class ProductApiTest extends BaseTest {
 
         List<Map<String, Object>> products = response.asList("$");
 
-        AssertionUtil.assertTrue(!products.isEmpty(), "Filtered category result should not be empty");
+        Assert.assertTrue(!products.isEmpty(), "Filtered category result should not be empty");
 
         boolean allMatchCategory = products.stream()
                 .allMatch(p -> "fresh-produce".equals(p.get("category")));
 
-        AssertionUtil.assertTrue(allMatchCategory, "All returned products should belong to the requested category");
+        Assert.assertTrue(allMatchCategory, "All returned products should belong to the requested category");
     }
 }
