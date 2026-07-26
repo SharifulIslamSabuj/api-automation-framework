@@ -6,8 +6,6 @@ import com.grocery.store.api.client.ResponseWrapper;
 import com.grocery.store.api.models.request.ClientRequest;
 import io.restassured.http.Method;
 
-import java.util.Map;
-
 public class ClientService {
 
     private static final String BASE_PATH = ApiRoutes.CLIENTS;
@@ -22,12 +20,7 @@ public class ClientService {
     public ResponseWrapper createClient(ClientRequest request, String token) {
 
         return new ResponseWrapper(
-                ApiClient.request(
-                        Method.POST,
-                        BASE_PATH,
-                        request,
-                        Map.of("Authorization", "Bearer " + token)
-                )
+                ApiClient.postWithAuth(BASE_PATH, request, token)
         );
     }
 }

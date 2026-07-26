@@ -4,6 +4,8 @@ import com.grocery.store.api.config.ConfigManager;
 import com.grocery.store.api.filters.ApiLoggingFilter;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.config.HttpClientConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.specification.RequestSpecification;
 
 public class RequestSpecFactory {
@@ -16,9 +18,9 @@ public class RequestSpecFactory {
                 .setBaseUri(ConfigManager.getBaseUrl())
                 .setContentType("application/json")
                 .setConfig(
-                        io.restassured.config.RestAssuredConfig.config()
+                        RestAssuredConfig.config()
                                 .httpClient(
-                                        io.restassured.config.HttpClientConfig.httpClientConfig()
+                                        HttpClientConfig.httpClientConfig()
                                                 .setParam("http.connection.timeout", ConfigManager.getConnectionTimeout())
                                                 .setParam("http.socket.timeout", ConfigManager.getReadTimeout())
                                 )

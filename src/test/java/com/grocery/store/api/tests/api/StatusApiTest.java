@@ -14,7 +14,7 @@ public class StatusApiTest extends BaseTest {
 
         var response = statusService.getStatus();
 
-        AssertionUtil.assertStatusCode(response, 200);
+        assertStatus(response, 200);
 
         String status = response.getString("status");
 
