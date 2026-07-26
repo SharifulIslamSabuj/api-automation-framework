@@ -32,9 +32,7 @@ public class OrderE2ETest extends BaseTest {
         var addResponse = cartService.addProductToCart(cartId, productId);
         assertStatus(addResponse, 201);
 
-        OrderRequest request = new OrderRequest();
-        request.setCartId(cartId);
-        request.setCustomerName(TestDataFactory.customerName());
+        OrderRequest request = TestDataFactory.validOrder(cartId);
 
         var orderResponse = orderService.placeOrder(
                 request,

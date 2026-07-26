@@ -2,16 +2,13 @@ package com.grocery.store.api.config;
 
 
 import com.grocery.store.api.observability.ObservabilityManager;
-import com.grocery.store.api.execution.ExecutionController;
 
 import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Enterprise ConfigManager (ACME-aligned Grocery version)
  * Supports:
- * - Profile-based environment switching
- * - ExecutionController as source of truth
+ * - Profile-based environment switching (env system property)
  * - Cached base URL resolution
  */
 public final class ConfigManager {
@@ -51,7 +48,7 @@ public final class ConfigManager {
 
     private static void resolveProfile() {
 
-        String profile = ExecutionController.getEnv();
+        String profile = currentEnv();
 
         resolvedProfile = profile;
         resolvedBaseUrl = resolveBaseUrl(profile);
@@ -75,15 +72,15 @@ public final class ConfigManager {
 
     public static String getBaseUrl() {
 
-        if (!ExecutionController.getEnv().equals(resolvedProfile)) {
+        if (!currentEnv().equals(resolvedProfile)) {
             resolveProfile();
         }
 
         return resolvedBaseUrl;
     }
 
-    public static String getEnv() {
-        return ExecutionController.getEnv();
+    private static String currentEnv() {
+        return System.getProperty("env", "dev");
     }
 
     // =========================

@@ -90,7 +90,7 @@ flowchart LR
 ```
 src/test/java/com/grocery/store/api
 ├── base
-│   └── BaseTest.java                  # Suite setup, shared assertion/validation helpers
+│   └── BaseTest.java                  # Shared assertion/validation helpers
 ├── client
 │   ├── ApiClient.java                 # HTTP execution, retry, error classification
 │   ├── ApiRoutes.java                 # Centralized endpoint path constants
@@ -98,14 +98,10 @@ src/test/java/com/grocery/store/api
 │   └── ResponseWrapper.java           # Typed response accessors
 ├── config
 │   └── ConfigManager.java             # Loads config.properties, resolves environment
-├── execution
-│   ├── ExecutionController.java       # Environment/group resolution helpers
-│   └── ExecutionInterceptor.java      # TestNG method interceptor (smoke suite)
 ├── filters
 │   └── ApiLoggingFilter.java          # REST Assured filter for structured request/response logging
 ├── models
 │   ├── request
-│   │   ├── CartRequest.java
 │   │   ├── ClientRequest.java
 │   │   └── OrderRequest.java
 │   └── response
@@ -218,7 +214,7 @@ Configuration lives in [`src/test/resources/config.properties`](src/test/resourc
 | `retry.count` | Additional retry attempts for retryable `GET` failures | `0` |
 | `retry.delay` | Delay between retry attempts (ms) | `1000` |
 
-The active environment defaults to `dev` (`ExecutionController`, backed by the `env` system property). The `test` task in `build.gradle` does not currently forward `-Denv` to the test JVM, so passing `-Denv=qa` on the command line has no effect today. Until that forwarding is added (see [Future Enhancements](#future-enhancements)), the environment can only be changed by editing `config.properties` directly. Independently, all three environment URLs currently point to the same public sandbox API, so environment selection has no visible effect on requests either way.
+The active environment defaults to `dev` (`ConfigManager`, backed by the `env` system property). The `test` task in `build.gradle` forwards `-Denv` to the test JVM (`systemProperty "env", System.getProperty("env", "dev")`), so `./gradlew test -Denv=qa` does reach `ConfigManager`. All three environment URLs currently point to the same public sandbox API, so environment selection has no visible effect on requests today regardless.
 
 ---
 
@@ -333,7 +329,6 @@ Some endpoints (placing an order, creating a client with an existing token) requ
 
 - CI/CD pipeline via GitHub Actions
 - Negative-path / error-response test coverage (4xx scenarios)
-- Wire `-Denv` and `-Dgroups` through the Gradle `test` task's `systemProperty` so environment and group selection can be driven from the command line
 - TestNG `IRetryAnalyzer` for automatic re-run of failed tests at the CI level
 
 ---

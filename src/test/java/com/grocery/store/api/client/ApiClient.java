@@ -36,14 +36,12 @@ public final class ApiClient {
                 Response response = req.request(method, endpoint);
                 int status = response.getStatusCode();
 
+                // Client/server error classification logging is owned solely by
+                // ApiLoggingFilter, which observes every attempt uniformly.
+                // Status is inspected here only to drive retry decisions.
                 if (status < 500) {
-                    if (status >= 400) {
-                        ObservabilityManager.logClientError(endpoint, status);
-                    }
                     return response;
                 }
-
-                ObservabilityManager.logServerError(endpoint, status);
 
                 boolean transientStatus = status == 502 || status == 503 || status == 504;
 

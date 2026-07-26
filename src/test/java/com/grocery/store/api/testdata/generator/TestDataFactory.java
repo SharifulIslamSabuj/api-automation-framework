@@ -36,9 +36,8 @@ public class TestDataFactory {
 
     public static OrderRequest validOrder(String cartId) {
         OrderRequest request = new OrderRequest();
-        long timestamp = System.currentTimeMillis();
         request.setCartId(cartId);
-        request.setCustomerName("Customer_" + timestamp);
+        request.setCustomerName(customerName());
         return request;
     }
 }

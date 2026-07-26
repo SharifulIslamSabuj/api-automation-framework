@@ -1,69 +1,19 @@
 package com.grocery.store.api.observability;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
 
 /**
- * Enterprise Observability Manager (Grocery Store API Framework)
- * Centralized logging + failure classification + execution tracking
- *
- * Production-grade features:
- * - Structured logs
- * - Failure classification
- * - Retry observability support
- * - CI-friendly debugging format
+ * Centralized structured console logging for request/response lifecycle,
+ * failure classification, and retry events (Grocery Store API Framework).
  */
 public final class ObservabilityManager {
 
     private static final Logger logger =
             Logger.getLogger(ObservabilityManager.class.getName());
 
-    private static final DateTimeFormatter FORMAT =
-            DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
-
     private static final String PREFIX = "[OBS]";
 
     private ObservabilityManager() {}
-
-    // =========================================================
-    // TEST LIFECYCLE
-    // =========================================================
-
-    public static void logTestStart(String className, String methodName) {
-        log("[TEST_START] " + className + "." + methodName);
-    }
-
-    public static void logTestEnd(String className, String methodName, String status) {
-        log("[TEST_END] " + className + "." + methodName + " | STATUS=" + status);
-    }
-
-    // =========================================================
-    // EXECUTION FLOW
-    // =========================================================
-
-    public static void logRunning(String testName) {
-        log("[RUNNING] " + testName);
-    }
-
-    public static void logSkipped(String testName, String reason) {
-        log("[SKIPPED] " + testName + " | REASON=" + reason);
-    }
-
-    public static void logExecutionStrategy(boolean ci,
-                                            String groups,
-                                            String env,
-                                            int total,
-                                            int run) {
-
-        log("=====================================================");
-        log("EXECUTION STRATEGY");
-        log("CI=" + ci);
-        log("GROUPS=" + groups);
-        log("ENV=" + env);
-        log("TOTAL=" + total + " | RUNNING=" + run);
-        log("=====================================================");
-    }
 
     // =========================================================
     // API EVENTS
@@ -130,8 +80,7 @@ public final class ObservabilityManager {
     // =========================================================
 
     private static void log(String message) {
-        String time = LocalDateTime.now().format(FORMAT);
-        logger.info(PREFIX + " " + time + " " + message);
+        logger.info(PREFIX + " " + message);
     }
 
     private static String format(String type, String endpoint, String message) {

@@ -44,12 +44,13 @@ public class ApiLoggingFilter implements Filter {
         // RESPONSE DETAILS
         // =========================
         int statusCode = response.getStatusCode();
-        String responseBody = response.getBody().asPrettyString();
 
         ObservabilityManager.logResponse(statusCode, responseTime);
 
         // =========================
         // FAILURE CLASSIFICATION
+        // (sole owner of client/server error classification logging;
+        //  ApiClient's retry loop uses status codes for retry decisions only)
         // =========================
         if (statusCode >= 400 && statusCode < 500) {
             ObservabilityManager.logClientError(uri, statusCode);
@@ -59,7 +60,7 @@ public class ApiLoggingFilter implements Filter {
             ObservabilityManager.logServerError(uri, statusCode);
         }
 
-        if (responseBody == null || responseBody.isEmpty()) {
+        if (response.getBody().asString().isEmpty()) {
             ObservabilityManager.logValidationError("Empty response body for: " + uri);
         }
 

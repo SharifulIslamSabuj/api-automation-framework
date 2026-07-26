@@ -2,6 +2,7 @@ package com.grocery.store.api.utils;
 
 import com.grocery.store.api.models.request.ClientRequest;
 import com.grocery.store.api.services.ClientService;
+import com.grocery.store.api.testdata.generator.TestDataFactory;
 
 public class TokenManager {
 
@@ -21,14 +22,12 @@ public class TokenManager {
 
     private static String generateToken() {
 
-        long timestamp = System.currentTimeMillis();
-
         ClientRequest request = new ClientRequest();
-        request.setClientName("AutoUser");
-        request.setClientEmail("autouser" + timestamp + "@test.com");
+        request.setClientName(TestDataFactory.clientName());
+        request.setClientEmail(TestDataFactory.clientEmail());
 
         String accessToken = clientService.createClient(request)
-                .getString("accessToken");   // ✅ ACME WAY
+                .getString("accessToken");
 
         if (accessToken == null || accessToken.isEmpty()) {
             throw new RuntimeException("Access token is null/empty");

@@ -1,6 +1,5 @@
 package com.grocery.store.api.client;
 
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import com.grocery.store.api.schema.JsonSchemaValidator;
 
@@ -28,10 +27,6 @@ public class ResponseWrapper {
 
     public String getString(String path) {
         return response.jsonPath().getString(path);
-    }
-
-    public JsonPath jsonPath() {
-        return response.jsonPath();
     }
 
     public <T> T as(Class<T> clazz) {

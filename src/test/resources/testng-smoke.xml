@@ -2,10 +2,6 @@
 
 <suite name="Smoke Suite" parallel="methods" thread-count="3">
 
-    <listeners>
-        <listener class-name="com.grocery.store.api.execution.ExecutionInterceptor"/>
-    </listeners>
-
     <test name="Smoke Tests">
         <groups>
             <run>
