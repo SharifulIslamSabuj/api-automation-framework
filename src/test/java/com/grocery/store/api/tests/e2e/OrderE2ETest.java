@@ -2,7 +2,7 @@ package com.grocery.store.api.tests.e2e;
 
 import com.grocery.store.api.base.BaseTest;
 import com.grocery.store.api.models.request.OrderRequest;
-import com.grocery.store.api.models.response.OrderResponse;
+import com.grocery.store.api.models.response.CreateOrderResponse;
 import com.grocery.store.api.services.CartService;
 import com.grocery.store.api.services.OrderService;
 import com.grocery.store.api.services.ProductService;
@@ -42,7 +42,7 @@ public class OrderE2ETest extends BaseTest {
         assertStatus(orderResponse, 201);
         validate(orderResponse, "order-schema.json");
 
-        OrderResponse response = orderResponse.as(OrderResponse.class);
+        CreateOrderResponse response = orderResponse.as(CreateOrderResponse.class);
 
         AssertionUtil.assertNotEmpty(response.getOrderId(), "orderId");
     }

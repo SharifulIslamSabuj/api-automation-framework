@@ -3,7 +3,7 @@ package com.grocery.store.api.models.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OrderResponse {
+public class CreateOrderResponse {
 
     private String orderId;
 
