@@ -33,17 +33,31 @@ public class OrderE2ETest extends BaseTest {
         assertStatus(addResponse, 201);
 
         OrderRequest request = TestDataFactory.validOrder(cartId);
+        String token = TokenManager.getToken();
 
-        var orderResponse = orderService.placeOrder(
-                request,
-                TokenManager.getToken()
-        );
+        var orderResponse = orderService.placeOrder(request, token);
 
-        assertStatus(orderResponse, 201);
-        validate(orderResponse, "order-schema.json");
+        String orderId = orderResponse.getStatusCode() == 201
+                ? orderResponse.getString("orderId")
+                : null;
 
-        CreateOrderResponse response = orderResponse.as(CreateOrderResponse.class);
+        try {
+            assertStatus(orderResponse, 201);
+            validate(orderResponse, "order-schema.json");
 
-        AssertionUtil.assertNotEmpty(response.getOrderId(), "orderId");
+            CreateOrderResponse response = orderResponse.as(CreateOrderResponse.class);
+
+            AssertionUtil.assertNotEmpty(response.getOrderId(), "orderId");
+        } finally {
+            if (orderId != null) {
+                try {
+                    orderService.deleteOrder(orderId, token);
+                } catch (Exception cleanupException) {
+                    System.err.println(
+                            "Order cleanup failed for orderId " + orderId + ": " + cleanupException.getMessage()
+                    );
+                }
+            }
+        }
     }
 }
