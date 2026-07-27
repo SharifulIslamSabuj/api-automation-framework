@@ -5,6 +5,7 @@ import com.grocery.store.api.filters.ApiLoggingFilter;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.HttpClientConfig;
+import io.restassured.config.LogConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.specification.RequestSpecification;
 
@@ -24,6 +25,10 @@ public class RequestSpecFactory {
                                                 .setParam("http.connection.timeout", ConfigManager.getConnectionTimeout())
                                                 .setParam("http.socket.timeout", ConfigManager.getReadTimeout())
                                 )
+                                // AllureRestAssured honors REST Assured's own header blacklist when
+                                // building its HTTP evidence attachments, rendering the value as
+                                // "[ BLACKLISTED ]" instead of the real bearer token.
+                                .logConfig(LogConfig.logConfig().blacklistHeader("Authorization"))
                 )
                 .addFilter(new AllureRestAssured())
                 .addFilter(new ApiLoggingFilter())

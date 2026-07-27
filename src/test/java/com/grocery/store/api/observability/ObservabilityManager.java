@@ -44,7 +44,7 @@ public final class ObservabilityManager {
     }
 
     public static void logValidationError(String message) {
-        logger.warning("[VALIDATION_ERROR] " + message);
+        logger.warning(withThread("[VALIDATION_ERROR] " + message));
     }
 
     // =========================================================
@@ -80,10 +80,19 @@ public final class ObservabilityManager {
     // =========================================================
 
     private static void log(String message) {
-        logger.info(PREFIX + " " + message);
+        logger.info(withThread(PREFIX + " " + message));
     }
 
     private static String format(String type, String endpoint, String message) {
-        return type + " " + endpoint + " | " + message;
+        return withThread(type + " " + endpoint + " | " + message);
+    }
+
+    // Gradle's TestNG XML report aggregates all system-err/system-out output for a whole
+    // test class into one shared block, so under parallel="classes" execution log lines
+    // from concurrently-running classes/methods can appear interleaved in that report.
+    // Appending the thread name lets an engineer manually separate one call's request/
+    // response/retry lines from another's when reading a jumbled block.
+    private static String withThread(String message) {
+        return message + " | THREAD=" + Thread.currentThread().getName();
     }
 }
