@@ -1,5 +1,7 @@
 # Grocery Store API Automation Framework
 
+[![API Tests](https://github.com/SharifulIslamSabuj/api-automation-framework/actions/workflows/api-tests.yml/badge.svg)](https://github.com/SharifulIslamSabuj/api-automation-framework/actions/workflows/api-tests.yml)
+
 A Java-based REST API test automation framework built with **REST Assured**, **TestNG**, and **Gradle**, validating the public [Simple Grocery Store API](https://simple-grocery-store-api.click) sandbox. The framework demonstrates a layered architecture, configurable retry handling, JSON Schema validation, structured observability logging, and Allure reporting.
 
 ---
@@ -264,6 +266,22 @@ No static credentials are required to run this suite. `TokenManager` registers a
 
 ---
 
+## Continuous Integration
+
+A single GitHub Actions workflow ([`.github/workflows/api-tests.yml`](.github/workflows/api-tests.yml)) runs on Ubuntu with Java 17 (Temurin) and executes the exact same `./gradlew` commands documented above — nothing CI-specific is required to reproduce a run locally.
+
+| Trigger | What runs | Tests |
+|---|---|---|
+| Pull request → `main` | Compile, then the smoke suite | 4 |
+| Push to `main` | The regression suite (already includes the E2E test) | 16 |
+| Manual (`workflow_dispatch`) | Operator picks a suite (`default` / `smoke` / `regression` / `e2e`) and environment (`dev` / `qa` / `prod`) from constrained dropdowns | varies |
+
+There is no scheduled run — this is a portfolio project without an active on-call team, so an unattended recurring job against the public sandbox wouldn't have a consumer; the manual trigger already covers on-demand health checks.
+
+Every run uploads the raw `allure-results` and Gradle's HTML test report as workflow artifacts (14-day retention), even on failure, so a red run can be investigated without re-running it. No credentials are configured in the workflow — the framework registers its own API client and bearer token at runtime (see [Authentication](#authentication)), and Phase 10's Allure/console redaction applies identically in CI since it's the same code path.
+
+---
+
 ## Retry Strategy
 
 Retry logic lives in `ApiClient` and is intentionally conservative:
@@ -331,7 +349,6 @@ Some endpoints (placing an order, creating a client with an existing token) requ
 
 ## Future Enhancements
 
-- CI/CD pipeline via GitHub Actions
 - Negative-path / error-response test coverage (4xx scenarios)
 - TestNG `IRetryAnalyzer` for automatic re-run of failed tests at the CI level
 

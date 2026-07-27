@@ -1,0 +1,165 @@
+name: API Tests
+
+# PR      -> compile + smoke (fast quality gate)
+# push    -> regression (already includes the E2E test via package membership)
+# manual  -> operator picks a suite/environment; no schedule (see README CI section for why)
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: Test suite to run
+        type: choice
+        required: true
+        default: regression
+        options:
+          - default
+          - smoke
+          - regression
+          - e2e
+      environment:
+        description: Target environment
+        type: choice
+        required: true
+        default: dev
+        options:
+          - dev
+          - qa
+          - prod
+
+permissions:
+  contents: read
+
+concurrency:
+  # event_name is included so a manual run and a main push (both on refs/heads/main)
+  # never cancel each other - only reruns of the *same* event/ref do.
+  group: api-tests-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pr-quality-gate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Compile
+        run: ./gradlew testClasses
+
+      - name: Run smoke suite
+        run: ./gradlew test -Psuite=smoke -Denv=dev
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: smoke-allure-results
+          path: build/allure-results
+          retention-days: 14
+
+      - name: Upload Gradle test report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: smoke-test-report
+          path: build/reports/tests/test
+          retention-days: 14
+
+  main-regression:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Run regression suite
+        run: ./gradlew test -Psuite=regression -Denv=dev
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: regression-allure-results
+          path: build/allure-results
+          retention-days: 14
+
+      - name: Upload Gradle test report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: regression-test-report
+          path: build/reports/tests/test
+          retention-days: 14
+
+  manual-run:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Run selected suite
+        env:
+          SUITE: ${{ inputs.suite }}
+          TARGET_ENV: ${{ inputs.environment }}
+        run: |
+          case "$SUITE" in
+            default)
+              ./gradlew test -Denv="$TARGET_ENV"
+              ;;
+            smoke)
+              ./gradlew test -Psuite=smoke -Denv="$TARGET_ENV"
+              ;;
+            regression)
+              ./gradlew test -Psuite=regression -Denv="$TARGET_ENV"
+              ;;
+            e2e)
+              ./gradlew test -Psuite=e2e -Denv="$TARGET_ENV"
+              ;;
+            *)
+              echo "Unknown suite: $SUITE" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: manual-${{ inputs.suite }}-${{ inputs.environment }}-allure-results
+          path: build/allure-results
+          retention-days: 14
+
+      - name: Upload Gradle test report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: manual-${{ inputs.suite }}-${{ inputs.environment }}-test-report
+          path: build/reports/tests/test
+          retention-days: 14
