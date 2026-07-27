@@ -35,11 +35,11 @@ public final class ConfigManager {
 
             properties.load(input);
 
-            resolveProfile();
-
         } catch (Exception e) {
             throw new RuntimeException("Failed to load config.properties", e);
         }
+
+        resolveProfile();
     }
 
     // =========================
@@ -62,7 +62,9 @@ public final class ConfigManager {
             case "qa" -> properties.getProperty(QA);
             case "prod" -> properties.getProperty(PROD);
             case "dev" -> properties.getProperty(DEV);
-            default -> properties.getProperty(QA);
+            default -> throw new IllegalArgumentException(
+                    "Unsupported environment '" + profile + "'. Supported values: dev, qa, prod."
+            );
         };
     }
 
@@ -71,6 +73,11 @@ public final class ConfigManager {
     // =========================
 
     public static String getBaseUrl() {
+
+        String override = System.getProperty("baseUrl", "");
+        if (!override.isBlank()) {
+            return override;
+        }
 
         if (!currentEnv().equals(resolvedProfile)) {
             resolveProfile();

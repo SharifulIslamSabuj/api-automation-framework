@@ -214,7 +214,11 @@ Configuration lives in [`src/test/resources/config.properties`](src/test/resourc
 | `retry.count` | Additional retry attempts for retryable `GET` failures | `0` |
 | `retry.delay` | Delay between retry attempts (ms) | `1000` |
 
-The active environment defaults to `dev` (`ConfigManager`, backed by the `env` system property). The `test` task in `build.gradle` forwards `-Denv` to the test JVM (`systemProperty "env", System.getProperty("env", "dev")`), so `./gradlew test -Denv=qa` does reach `ConfigManager`. All three environment URLs currently point to the same public sandbox API, so environment selection has no visible effect on requests today regardless.
+The active environment defaults to `dev` (`ConfigManager`, backed by the `env` system property). The `test` task in `build.gradle` forwards `-Denv` to the test JVM (`systemProperty "env", System.getProperty("env", "dev")`), so `./gradlew test -Denv=qa` does reach `ConfigManager`. Only `dev`, `qa`, and `prod` are supported — any other value (including typos) now fails fast with a clear `IllegalArgumentException` before any request is sent, rather than silently falling back to another profile. All three environment URLs currently point to the same public sandbox API, so environment selection has no visible effect on requests today regardless.
+
+To point at a different base URL entirely without editing `config.properties`, pass `-DbaseUrl=<url>` (also forwarded by `build.gradle`); it takes precedence over the resolved environment profile. This is intended for ad hoc overrides (e.g. a personal fork of the sandbox, or a future CI-provided endpoint) rather than day-to-day use.
+
+No static credentials are required to run this suite. `TokenManager` registers a fresh, uniquely-named API client (`POST /api-clients`) on first use and caches the returned bearer token for the rest of the JVM — there is nothing to configure or provide up front.
 
 ---
 

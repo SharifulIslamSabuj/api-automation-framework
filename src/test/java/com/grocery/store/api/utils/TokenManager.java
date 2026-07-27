@@ -26,11 +26,13 @@ public class TokenManager {
         request.setClientName(TestDataFactory.clientName());
         request.setClientEmail(TestDataFactory.clientEmail());
 
-        String accessToken = clientService.createClient(request)
-                .getString("accessToken");
+        var response = clientService.createClient(request);
+        String accessToken = response.getString("accessToken");
 
         if (accessToken == null || accessToken.isEmpty()) {
-            throw new RuntimeException("Access token is null/empty");
+            throw new RuntimeException(
+                    "Token bootstrap failed: no accessToken in response (status " + response.getStatusCode() + ")"
+            );
         }
 
         return accessToken;
