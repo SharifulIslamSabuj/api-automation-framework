@@ -47,7 +47,11 @@ public final class ApiClient {
 
                 if (transientStatus && attempt < maxRetry) {
                     ObservabilityManager.logRetry(method.name(), endpoint, "HTTP " + status, attempt, maxRetry, retryDelay);
-                    sleep(retryDelay);
+                    if (!sleep(retryDelay)) {
+                        // Interrupted during the retry delay: abort the retry loop and
+                        // hand back the last response rather than retrying silently.
+                        return response;
+                    }
                     continue;
                 }
 
@@ -59,7 +63,11 @@ public final class ApiClient {
 
                 if (attempt < maxRetry) {
                     ObservabilityManager.logRetry(method.name(), endpoint, e.getClass().getSimpleName(), attempt, maxRetry, retryDelay);
-                    sleep(retryDelay);
+                    if (!sleep(retryDelay)) {
+                        throw new RuntimeException(
+                                "API request interrupted during retry delay: " + method + " " + endpoint, e
+                        );
+                    }
                     continue;
                 }
 
@@ -72,11 +80,18 @@ public final class ApiClient {
         throw new RuntimeException("API request failed: " + method + " " + endpoint);
     }
 
-    private static void sleep(long millis) {
+    /**
+     * @return true if the delay completed normally; false if interrupted,
+     *         in which case the interrupt flag is restored and the caller
+     *         must abort rather than continue retrying.
+     */
+    private static boolean sleep(long millis) {
         try {
             Thread.sleep(millis);
+            return true;
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
+            return false;
         }
     }
 

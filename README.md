@@ -211,7 +211,7 @@ Configuration lives in [`src/test/resources/config.properties`](src/test/resourc
 | `prod.base.url` | Base URL for the `prod` environment | `https://simple-grocery-store-api.click` |
 | `connection.timeout` | HTTP connection timeout (ms) | `5000` |
 | `read.timeout` | HTTP socket read timeout (ms) | `10000` |
-| `retry.count` | Additional retry attempts for retryable `GET` failures | `0` |
+| `retry.count` | Additional retry attempts for retryable `GET` failures | `1` |
 | `retry.delay` | Delay between retry attempts (ms) | `1000` |
 
 The active environment defaults to `dev` (`ConfigManager`, backed by the `env` system property). The `test` task in `build.gradle` forwards `-Denv` to the test JVM (`systemProperty "env", System.getProperty("env", "dev")`), so `./gradlew test -Denv=qa` does reach `ConfigManager`. Only `dev`, `qa`, and `prod` are supported — any other value (including typos) now fails fast with a clear `IllegalArgumentException` before any request is sent, rather than silently falling back to another profile. All three environment URLs currently point to the same public sandbox API, so environment selection has no visible effect on requests today regardless.
