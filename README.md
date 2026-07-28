@@ -2,7 +2,27 @@
 
 [![API Tests](https://github.com/SharifulIslamSabuj/api-automation-framework/actions/workflows/api-tests.yml/badge.svg)](https://github.com/SharifulIslamSabuj/api-automation-framework/actions/workflows/api-tests.yml)
 
-A Java-based REST API test automation framework built with **REST Assured**, **TestNG**, and **Gradle**, validating the public [Simple Grocery Store API](https://simple-grocery-store-api.click) sandbox. The framework demonstrates a layered architecture, configurable retry handling, JSON Schema validation, structured observability logging, and Allure reporting.
+**Java 17 • REST Assured • TestNG • Gradle • Allure • GitHub Actions**
+
+A production-inspired REST Assured API automation framework built with Java 17 and TestNG, featuring layered architecture, runtime bearer-token authentication, reusable API components, Allure reporting, and GitHub Actions CI.
+
+## 🛠 Technology Stack
+
+| Category | Technology |
+|-----------|------------|
+| Language | Java 17 |
+| Build Tool | Gradle (Wrapper) |
+| Test Framework | TestNG |
+| API Testing | REST Assured |
+| Serialization | Jackson |
+| Assertions | Hamcrest |
+| Validation | JSON Schema Validation |
+| Reporting | Allure Report, Gradle HTML Report |
+| Logging | Structured Request & Response Logging |
+| CI/CD | GitHub Actions |
+| Authentication | Runtime Bearer Token Authentication |
+| Design | Layered Architecture • Service Layer • Reusable API Client • POJO Models |
+| Test Suites | Smoke • Regression • End-to-End |
 
 ---
 
