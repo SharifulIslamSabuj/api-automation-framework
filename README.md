@@ -22,7 +22,7 @@ This project exercises the Products, Carts, Orders, API Clients, and Status endp
 - TestNG group-based execution (`smoke`, `regression`, `e2e`) via dedicated suite files
 - Centralized, dynamic test data generation (`TestDataFactory`)
 - Token-based authentication handling for secured endpoints (`TokenManager`)
-- Single-file Allure HTML report generated automatically after every test run
+- Single-file Allure HTML report generated automatically after every test run when Allure Commandline is installed (see [Installation](#installation))
 
 ---
 
@@ -36,6 +36,7 @@ This project exercises the Products, Carts, Orders, API Clients, and Status endp
 | JSON Handling | REST Assured JSON Path | 6.0.0 |
 | Schema Validation | REST Assured JSON Schema Validator | 6.0.0 |
 | Test Runner | TestNG | 7.12.0 |
+| JSON (De)serialization | Jackson Databind | 2.11.0 |
 | Reporting | Allure TestNG | 2.32.0 |
 | Reporting | Allure REST Assured | 2.32.0 |
 | Report Generation | Allure Commandline (external tool) | 2.x |
@@ -107,7 +108,7 @@ src/test/java/com/grocery/store/api
 │   │   ├── ClientRequest.java
 │   │   └── OrderRequest.java
 │   └── response
-│       └── OrderResponse.java
+│       └── CreateOrderResponse.java
 ├── observability
 │   └── ObservabilityManager.java      # Centralized structured logging
 ├── schema
@@ -125,6 +126,7 @@ src/test/java/com/grocery/store/api
 │   ├── api
 │   │   ├── CartApiTest.java
 │   │   ├── ClientApiTest.java
+│   │   ├── OrderApiTest.java
 │   │   ├── ProductApiTest.java
 │   │   └── StatusApiTest.java
 │   └── e2e
@@ -195,7 +197,7 @@ brew install allure          # macOS
 ### Clone and verify setup
 
 ```bash
-git clone https://github.com/<your-username>/api-automation-framework.git
+git clone https://github.com/SharifulIslamSabuj/api-automation-framework.git
 cd api-automation-framework
 ./gradlew clean test
 ```
@@ -254,6 +256,7 @@ No static credentials are required to run this suite. `TokenManager` registers a
 |---|---|
 | `CartApiTest` | `smoke`, `regression` |
 | `ClientApiTest` | `regression` |
+| `OrderApiTest` | `regression` |
 | `ProductApiTest` | `smoke`, `regression` |
 | `StatusApiTest` | `smoke` |
 | `OrderE2ETest` | `smoke`, `regression`, `e2e` |
@@ -261,7 +264,7 @@ No static credentials are required to run this suite. `TokenManager` registers a
 | Suite File | Group Filter | Classes Executed |
 |---|---|---|
 | `testng-smoke.xml` | `smoke` | CartApiTest, ProductApiTest, StatusApiTest, OrderE2ETest |
-| `testng-regression.xml` | `regression` | CartApiTest, ClientApiTest, ProductApiTest, OrderE2ETest |
+| `testng-regression.xml` | `regression` | CartApiTest, ClientApiTest, OrderApiTest, ProductApiTest, OrderE2ETest |
 | `testng-e2e.xml` | `e2e` | OrderE2ETest |
 
 ---
@@ -278,7 +281,7 @@ A single GitHub Actions workflow ([`.github/workflows/api-tests.yml`](.github/wo
 
 There is no scheduled run — this is a portfolio project without an active on-call team, so an unattended recurring job against the public sandbox wouldn't have a consumer; the manual trigger already covers on-demand health checks.
 
-Every run uploads the raw `allure-results` and Gradle's HTML test report as workflow artifacts (14-day retention), even on failure, so a red run can be investigated without re-running it. No credentials are configured in the workflow — the framework registers its own API client and bearer token at runtime (see [Authentication](#authentication)), and Phase 10's Allure/console redaction applies identically in CI since it's the same code path.
+Every run uploads the raw `allure-results` and Gradle's HTML test report as workflow artifacts (14-day retention), even on failure, so a red run can be investigated without re-running it. No credentials are configured in the workflow — the framework registers its own API client and bearer token at runtime (see [Authentication](#authentication)), and the same Authorization/token redaction described there applies identically in CI, since it's the same code path.
 
 ---
 
@@ -313,7 +316,7 @@ Full request/response payload evidence (headers, body, curl-equivalent command) 
 ## Reporting
 
 - Allure results are written to `build/allure-results` (configured via `allure.properties` and reinforced by the Gradle `test` task).
-- After every test run, the `generateSingleAllureHtml` task (wired via `finalizedBy`) produces a single-file HTML report at:
+- After every test run, the `generateSingleAllureHtml` task (wired via `finalizedBy`) produces a single-file HTML report — locally, when Allure Commandline is installed (see [Installation](#installation)); CI does not install it and instead uploads the raw Allure results and Gradle's HTML report as workflow artifacts (see [Continuous Integration](#continuous-integration)) — at:
 
   ```
   build/allure-report/GroceryStore-ApiAutomationReport.html
@@ -339,18 +342,20 @@ Validation is performed via `BaseTest.validate(response, schemaFileName)`, which
 
 Some endpoints (placing an order, creating a client with an existing token) require a bearer token. `TokenManager` lazily creates one API client via `POST /api-clients` on first use and caches the returned `accessToken` for the remainder of the test run, using a synchronized accessor so concurrent test threads share a single token instead of creating one each.
 
+The real `Authorization` header value and the `accessToken` field in the client-registration response body are never written to the console, and are redacted (`[ BLACKLISTED ]`) in Allure's HTTP evidence and the generated HTML report — only the fact that authentication was attempted is visible, not the value.
+
 ---
 
 ## Test Data Strategy
 
-`TestDataFactory` centralizes generation of dynamic test data (client names/emails, customer names, cart quantities) using timestamp-based uniqueness, avoiding hardcoded values that could collide across parallel or repeated runs.
+`TestDataFactory` centralizes generation of dynamic test data (client names/emails, customer names, cart quantities). Generated values combine a timestamp with a shared `AtomicLong` counter — a timestamp alone was proven to collide under real thread contention (multiple threads can call `System.currentTimeMillis()` within the same millisecond), so the counter guarantees uniqueness regardless of parallel execution. See [Known Limitations](docs/quality/KNOWN_AUT_LIMITATIONS.md) for what this does and doesn't clean up remotely.
 
 ---
 
-## Future Enhancements
+## Quality & Reliability Documentation
 
-- Negative-path / error-response test coverage (4xx scenarios)
-- TestNG `IRetryAnalyzer` for automatic re-run of failed tests at the CI level
+- [Known Limitations](docs/quality/KNOWN_AUT_LIMITATIONS.md) — external/public-sandbox constraints this framework works around, not framework defects
+- [Final Project Assessment](docs/quality/FINAL_PROJECT_ASSESSMENT.md) — architecture, coverage, security, reliability, and reusability qualification, backed by controlled repeated-execution evidence
 
 ---
 
