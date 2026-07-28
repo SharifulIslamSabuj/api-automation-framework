@@ -37,21 +37,9 @@ This project exercises the Products, Carts, Orders, API Clients, and Status endp
 
 ---
 
-## Features
+## Dependency Versions
 
-- Layered architecture (Test → Service → Client) that keeps test logic decoupled from HTTP and endpoint details
-- Centralized HTTP client (`ApiClient`) with method- and status-aware retry: only idempotent `GET` requests are retried, and only on transient failures
-- JSON Schema validation for cart, product list, and order responses
-- Structured, timestamped observability logging for every request, response, error, and retry
-- Allure reporting with request/response evidence attached automatically per call
-- TestNG group-based execution (`smoke`, `regression`, `e2e`) via dedicated suite files
-- Centralized, dynamic test data generation (`TestDataFactory`)
-- Token-based authentication handling for secured endpoints (`TokenManager`)
-- Single-file Allure HTML report generated automatically after every test run when Allure Commandline is installed (see [Installation](#installation))
-
----
-
-## Tech Stack
+Exact declared dependency versions, for contributors and dependency audits — see the Technology Stack table near the top of this README for an at-a-glance overview.
 
 | Category | Technology | Version |
 |---|---|---|
@@ -308,6 +296,8 @@ There is no scheduled run — this is a portfolio project without an active on-c
 
 Every run uploads the raw `allure-results` and Gradle's HTML test report as workflow artifacts (14-day retention), even on failure, so a red run can be investigated without re-running it. No credentials are configured in the workflow — the framework registers its own API client and bearer token at runtime (see [Authentication](#authentication)), and the same Authorization/token redaction described there applies identically in CI, since it's the same code path.
 
+This workflow has been verified on GitHub's own runners, not just locally: the regression suite has passed with all 16 tests (including the E2E test) on multiple real runs, with artifacts uploading correctly and no token appearing in any remote log or artifact.
+
 ---
 
 ## Retry Strategy
@@ -379,8 +369,12 @@ The real `Authorization` header value and the `accessToken` field in the client-
 
 ## Quality & Reliability Documentation
 
+Across 40 controlled suite runs (380 test executions), no framework-attributable flakiness was observed during the qualification window — see the assessment below for full methodology and evidence.
+
 - [Known Limitations](docs/quality/KNOWN_AUT_LIMITATIONS.md) — external/public-sandbox constraints this framework works around, not framework defects
 - [Final Project Assessment](docs/quality/FINAL_PROJECT_ASSESSMENT.md) — architecture, coverage, security, reliability, and reusability qualification, backed by controlled repeated-execution evidence
+
+**Latest published release:** [v1.0.0](https://github.com/SharifulIslamSabuj/api-automation-framework/releases/tag/v1.0.0). `main` may contain documentation-only changes made after that release.
 
 ---
 
