@@ -2,7 +2,12 @@
 
 [![API Tests](https://github.com/SharifulIslamSabuj/api-automation-framework/actions/workflows/api-tests.yml/badge.svg)](https://github.com/SharifulIslamSabuj/api-automation-framework/actions/workflows/api-tests.yml)
 
-**Java 17 • REST Assured • TestNG • Gradle • Allure • GitHub Actions**
+![Java 17](https://img.shields.io/badge/Java-17-orange?style=flat-square&logo=openjdk)
+![REST Assured](https://img.shields.io/badge/REST%20Assured-API%20Testing-2E86C1?style=flat-square)
+![TestNG](https://img.shields.io/badge/TestNG-Framework-purple?style=flat-square)
+![Gradle](https://img.shields.io/badge/Gradle-Build-02303A?style=flat-square&logo=gradle)
+![Allure](https://img.shields.io/badge/Allure-Reporting-E91E63?style=flat-square)
+![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI-2088FF?style=flat-square&logo=githubactions)
 
 A production-inspired REST Assured API automation framework built with Java 17 and TestNG, featuring layered architecture, runtime bearer-token authentication, reusable API components, Allure reporting, and GitHub Actions CI.
 
