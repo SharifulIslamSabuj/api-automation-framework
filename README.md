@@ -369,4 +369,4 @@ GitHub: [@SharifulIslamSabuj](https://github.com/SharifulIslamSabuj)
 
 ## License
 
-This project does not yet include a license file. Consider adding an [MIT License](https://choosealicense.com/licenses/mit/) (or another OSI-approved license) before sharing this repository publicly.
+[MIT](LICENSE)

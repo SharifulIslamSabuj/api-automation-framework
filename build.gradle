@@ -15,7 +15,7 @@ dependencies {
     testImplementation 'io.rest-assured:json-path:6.0.0'
     testImplementation 'io.rest-assured:json-schema-validator:6.0.0'
 
-    // Declared explicitly because OrderResponse directly imports Jackson's
+    // Declared explicitly because CreateOrderResponse directly imports Jackson's
     // annotation API; previously resolved only as an incidental transitive
     // dependency of json-schema-validator. Version matches what already
     // resolves on the classpath (no upgrade).
